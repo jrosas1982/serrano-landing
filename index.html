@@ -8,26 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@400;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
-  <script>
-    const APP_ENV = "dev";
-    const ENV_LINKS = {
-      dev: {
-        turno: "https://testingserrano.itsos.ar/"
-      },
-      prod: {
-        turno: "https://serrano.itsos.ar/"
-      }
-    };
-
-    window.addEventListener("DOMContentLoaded", () => {
-      const links = ENV_LINKS[APP_ENV] || ENV_LINKS.prod;
-      document.querySelectorAll("[data-dynamic-link]").forEach((el) => {
-        const key = el.getAttribute("data-dynamic-link");
-        if (links[key]) el.setAttribute("href", links[key]);
-      });
-    });
-  </script>
+  <link rel="stylesheet" href="css/main.css" />
+  <script src="js/config.js" defer></script>
+  <script src="js/app.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Saltar al contenido</a>
@@ -42,7 +25,7 @@
 
   <nav class="nav container" aria-label="Navegación principal">
     <a class="brand" href="#" aria-label="Inicio Consultorios Serrano">
-      <img class="brand-logo" src="logo-clinica-serr.png" alt="Clínica Oftalmológicos Serrano" />
+      <img class="brand-logo" src="assets/images/logo/logo-clinica-serr.png" alt="Clínica Oftalmológicos Serrano" />
     </a>
     <ul>
       <li><a href="#estudios">Estudios</a></li>
@@ -91,16 +74,16 @@
       </div>
       <div class="estudios-media" aria-label="Galería de estudios">
         <figure class="estudio-shot">
-          <img src="content/images/portfolio-1.jpg" alt="Paciente en estudio oftalmológico" loading="lazy" />
+          <img src="assets/images/sections/portfolio-1.jpg" alt="Paciente en estudio oftalmológico" loading="lazy" />
         </figure>
         <figure class="estudio-shot">
-          <img src="content/images/portfolio-2.jpg" alt="Equipo de diagnóstico visual" loading="lazy" />
+          <img src="assets/images/sections/portfolio-2.jpg" alt="Equipo de diagnóstico visual" loading="lazy" />
         </figure>
         <figure class="estudio-shot">
-          <img src="content/images/portfolio-3.jpg" alt="Control oftalmológico en consultorio" loading="lazy" />
+          <img src="assets/images/sections/portfolio-3.jpg" alt="Control oftalmológico en consultorio" loading="lazy" />
         </figure>
         <figure class="estudio-shot">
-          <img src="content/images/portfolio-4.jpg" alt="Especialista realizando evaluación visual" loading="lazy" />
+          <img src="assets/images/sections/portfolio-4.jpg" alt="Especialista realizando evaluación visual" loading="lazy" />
         </figure>
       </div>
       <div class="cards three">
@@ -126,13 +109,13 @@
       </div>
       <div class="servicios-media" aria-label="Galería de servicios">
         <figure class="servicio-shot">
-          <img src="content/images/slide2-1024x768.jpg" alt="Servicio de quirófano oftalmológico" loading="lazy" />
+          <img src="assets/images/sections/slide2-1024x768.jpg" alt="Servicio de quirófano oftalmológico" loading="lazy" />
         </figure>
         <figure class="servicio-shot">
-          <img src="content/images/slide3-1024x768.jpg" alt="Servicio de contactología en consultorio" loading="lazy" />
+          <img src="assets/images/sections/slide3-1024x768.jpg" alt="Servicio de contactología en consultorio" loading="lazy" />
         </figure>
         <figure class="servicio-shot">
-          <img src="content/images/whatsapp-hero-1024x475.jpeg" alt="Atención personalizada de profesionales oftalmológicos" loading="lazy" />
+          <img src="assets/images/sections/whatsapp-hero-1024x475.jpeg" alt="Atención personalizada de profesionales oftalmológicos" loading="lazy" />
         </figure>
       </div>
       <div class="cards three">
@@ -159,10 +142,10 @@
           <p>Evaluamos cada caso para indicar la mejor estrategia visual, tanto en lentes de contacto como en rehabilitación para baja visión en adultos y menores.</p>
           <div class="bajavision-media" aria-label="Galería de baja visión">
             <figure class="bajavision-shot">
-              <img src="content/images/baja-vision/baja-2.jpg" alt="Evaluación de baja visión en consultorio" loading="lazy" />
+              <img src="assets/images/sections/baja-vision/baja-2.jpg" alt="Evaluación de baja visión en consultorio" loading="lazy" />
             </figure>
             <figure class="bajavision-shot">
-              <img src="content/images/baja-vision/serv-baja.jpg" alt="Paciente utilizando ayudas ópticas para baja visión" loading="lazy" />
+              <img src="assets/images/sections/baja-vision/serv-baja.jpg" alt="Paciente utilizando ayudas ópticas para baja visión" loading="lazy" />
             </figure>
           </div>
         </div>
@@ -235,7 +218,7 @@
     <div class="container footer-grid">
       <div>
         <a class="brand footer-brand" href="#">
-          <img class="brand-logo" src="logo-clinica-serr.png" alt="Clínica Oftalmológicos Serrano" />
+          <img class="brand-logo" src="assets/images/logo/logo-clinica-serr.png" alt="Clínica Oftalmológicos Serrano" />
         </a>
         <p>Serrano 1264, San Miguel, Buenos Aires</p>
       </div>
