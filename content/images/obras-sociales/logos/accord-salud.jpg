@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Accord Salud — Cobertura médica y bienestar integral</title>
+    <meta name="description" content="Accord Salud ofrece planes de salud, atención médica de calidad y bienestar integral para vos y tu familia." />
+    <meta name="robots" content="index, follow" />
+    <link rel="icon" type="image/png" href="./iconAccordSalud.png" />
+    <link rel="apple-touch-icon" href="./iconAccordSalud.png" />
+    <link rel="preload" href="./font/MonumentGrotesk-Regular.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="./font/MonumentGrotesk-Medium.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="./font/MonumentGrotesk-Bold.ttf" as="font" type="font/ttf" crossorigin />
+    <meta property="og:title" content="Accord Salud — Cobertura médica y bienestar integral" />
+    <meta property="og:description" content="Planes de salud y atención médica de calidad para vos y tu familia." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="./iconAccordSalud.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Accord Salud — Cobertura médica y bienestar integral" />
+    <meta name="twitter:description" content="Planes de salud y atención médica de calidad para vos y tu familia." />
+    <meta name="twitter:image" content="./iconAccordSalud.png" />
+    <style>@import url("https://fonts.googleapis.com/css?family=DM+Sans:500");</style>
+    <script>(function(d,w,c){w.BrevoConversationsID='689241e427525ce9a50dc08a';w[c]=w[c]||function(){(w[c].q=w[c].q||[]).push(arguments)};var s=d.createElement('script');s.async=true;s.src='https://conversations-widget.brevo.com/brevo-conversations.js';if(d.head)d.head.appendChild(s)})(document,window,'BrevoConversations');</script>
+    <script type="module" crossorigin src="./assets/index-DX8K8ryg.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DLrjIekj.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>if(document.fonts){document.fonts.ready.then(function(){document.body.style.opacity='0.999';requestAnimationFrame(function(){document.body.style.opacity='1'})});document.fonts.load('16px "Monument Grotesk"').then(function(){var b=document.querySelectorAll('button,a');b.forEach(function(e){e.style.display=e.style.display})})}</script>
+  </body>
+</html>

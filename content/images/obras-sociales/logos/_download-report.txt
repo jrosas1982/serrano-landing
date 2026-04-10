@@ -1,0 +1,9 @@
+﻿ioma => ERROR
+iose => ERROR
+sancor-salud => OG_IMAGE_NOT_FOUND
+osde => OG_IMAGE_NOT_FOUND
+premedic => ERROR
+avalian => OG_IMAGE_NOT_FOUND
+swiss-medical => OG_IMAGE_NOT_FOUND
+union-personal => OK
+accord-salud => OK
