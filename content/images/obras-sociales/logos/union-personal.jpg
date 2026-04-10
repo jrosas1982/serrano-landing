@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Unión Personal | Obra Social – Centros médicos propios y cobertura integral</title>
+    <meta name="description" content="Unión Personal: más de 60 años cuidando la salud de trabajadores y familias. Centros médicos propios, tecnología avanzada y atención de calidad en todo el país." />
+    <meta name="keywords" content="Unión Personal, obra social, salud, centros médicos propios, cobertura médica, Argentina, atención médica, sanatorio anchorena" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Unión Personal" />
+    <link rel="canonical" href="https://www.unionpersonal.com.ar/" />
+    <meta name="theme-color" content="#232e60" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.unionpersonal.com.ar/" />
+    <meta property="og:title" content="Unión Personal – Obra Social" />
+    <meta property="og:site_name" content="Unión Personal" />
+    <meta property="og:description" content="Más de 60 años cuidando la salud de trabajadores y familias. Centros médicos propios y tecnología avanzada." />
+    <meta property="og:image" content="/imagesUp/IconUp.png" />
+    <meta property="og:image:alt" content="Unión Personal" />
+    <meta property="og:image:type" content="image/png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://www.unionpersonal.com.ar/" />
+    <meta property="twitter:title" content="Unión Personal – Obra Social" />
+    <meta property="twitter:description" content="Más de 60 años cuidando la salud de trabajadores y familias. Centros médicos propios y tecnología avanzada." />
+    <meta property="twitter:image" content="/imagesUp/IconUp.png" />
+
+    <!-- Favicon / Icons -->
+    <link rel="icon" type="image/png" href="/imagesUp/IconUp.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/imagesUp/IconUp.png" />
+    <link rel="icon" sizes="192x192" href="/imagesUp/IconUp.png" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/font/MonumentGrotesk-Regular.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/font/MonumentGrotesk-Bold.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/imagesUp/SanatorioAnchorena.png" as="image" />
+    
+    <!-- Fonts -->
+    <style>
+      @font-face {
+        font-family: 'Monument Grotesk';
+        src: url('/font/MonumentGrotesk-Regular.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Monument Grotesk';
+        src: url('/font/MonumentGrotesk-Bold.ttf') format('truetype');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+    </style>
+    
+    
+    <style>
+      /* Prevent white flash on load */
+      body {
+        background-color: #232e60 !important;
+        margin: 0;
+        padding: 0;
+      }
+      #app {
+        min-height: 100vh;
+      }
+    </style>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Unión Personal",
+      "url": "https://www.unionpersonal.com.ar",
+      "logo": "https://www.unionpersonal.com.ar/logo.png",
+      "description": "Obra social con más de 60 años de experiencia en salud",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "AR"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "0810-555-1100",
+        "contactType": "customer service"
+      }
+    }
+    </script>
+    <script type="module" crossorigin src="/assets/index-B3zVk4k4.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D5c7yWMb.css">
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
