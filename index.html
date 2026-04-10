@@ -1,0 +1,217 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consultorios Oftalmológicos Serrano | San Miguel</title>
+  <meta name="description" content="Atención oftalmológica integral en San Miguel. Consultas, estudios, cirugía, contactología y baja visión. Turnos por WhatsApp." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@400;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    const APP_ENV = "dev";
+    const ENV_LINKS = {
+      dev: {
+        turno: "https://testingserrano.itsos.ar/"
+      },
+      prod: {
+        turno: "https://www.clinicaserrano.com.ar/"
+      }
+    };
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const links = ENV_LINKS[APP_ENV] || ENV_LINKS.prod;
+      document.querySelectorAll("[data-dynamic-link]").forEach((el) => {
+        const key = el.getAttribute("data-dynamic-link");
+        if (links[key]) el.setAttribute("href", links[key]);
+      });
+    });
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+
+  <header class="topbar">
+    <div class="container topbar-grid">
+      <p>Serrano 1264, San Miguel, Buenos Aires</p>
+      <a href="tel:+541146641293">11 4664-1293</a>
+      <a href="https://wa.me/5491146641293" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+    </div>
+  </header>
+
+  <nav class="nav container" aria-label="Navegación principal">
+    <a class="brand" href="#" aria-label="Inicio Consultorios Serrano">
+      <img src="https://www.clinicaserrano.com.ar/wp-content/uploads/2022/05/logo-top.png" alt="Consultorios Oftalmológicos Serrano" />
+    </a>
+    <ul>
+      <li><a href="#estudios">Estudios</a></li>
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#especialidades">Baja Visión</a></li>
+      <li><a href="#info-pacientes">Info Pacientes</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <a class="btn btn-primary nav-cta" href="#" data-dynamic-link="turno" target="_blank" rel="noopener noreferrer">Sacar turno</a>
+  </nav>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Oftalmología integral para adultos y niños</p>
+          <h1>Consultorios Oftalmológicos Serrano</h1>
+          <p class="lead">Estudios de alta complejidad, quirófano propio y especialistas en baja visión. Atención de lunes a sábado en San Miguel.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#" data-dynamic-link="turno" target="_blank" rel="noopener noreferrer">Pedir turno por WhatsApp</a>
+            <a class="btn btn-ghost" href="tel:+541146641293">Llamar ahora</a>
+          </div>
+          <ul class="hero-points" aria-label="Puntos destacados">
+            <li>Turnos rápidos y atención personalizada</li>
+            <li>OCT, topografía, paquimetría y campos visuales</li>
+            <li>Cirugía de cataratas, glaucoma y plástica ocular</li>
+          </ul>
+        </div>
+        <div class="hero-card" role="complementary" aria-label="Horario y contacto">
+          <h2>Atención y turnos</h2>
+          <p><strong>Lunes a viernes:</strong> 08:00 a 19:00</p>
+          <p><strong>Sábados:</strong> 08:00 a 13:00</p>
+          <p><strong>Teléfonos:</strong> 11 4664-1293 / 5284-3779</p>
+          <p><strong>Email:</strong> info@consultoriosserrano.com.ar</p>
+          <a class="btn btn-secondary" href="https://www.google.com/maps?q=Serrano+1264,+San+Miguel,+Buenos+Aires" target="_blank" rel="noopener noreferrer">Cómo llegar</a>
+        </div>
+      </div>
+      <div class="hero-bg-shape hero-bg-shape-a" aria-hidden="true"></div>
+      <div class="hero-bg-shape hero-bg-shape-b" aria-hidden="true"></div>
+    </section>
+
+    <section id="estudios" class="section container">
+      <div class="section-head">
+        <p class="eyebrow">Estudios</p>
+        <h2>Diagnóstico con tecnología de precisión</h2>
+      </div>
+      <div class="cards three">
+        <article class="card">
+          <h3>Consultas y controles</h3>
+          <p>Autorrefractometría, fondo de ojo, presión ocular, gonioscopía y oftalmoscopía binocular indirecta.</p>
+        </article>
+        <article class="card">
+          <h3>Tests funcionales</h3>
+          <p>Esteriópsis, Ishihara, Amsler, visión de contraste y evaluación de ojo seco.</p>
+        </article>
+        <article class="card">
+          <h3>Estudios complementarios</h3>
+          <p>OCT, topografía corneal, paquimetría, ecometría, tonometría y campos visuales.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="servicios" class="section container">
+      <div class="section-head">
+        <p class="eyebrow">Servicios principales</p>
+        <h2>Todo en un mismo centro</h2>
+      </div>
+      <div class="cards three">
+        <article class="card">
+          <h3>Quirófano propio</h3>
+          <p>Cirugía de catarata, glaucoma, cirugía corneal y cirugía plástica ocular.</p>
+        </article>
+        <article class="card">
+          <h3>Contactología</h3>
+          <p>Evaluación y adaptación de lentes de contacto según necesidades visuales y estilo de vida.</p>
+        </article>
+        <article class="card">
+          <h3>Atención personalizada</h3>
+          <p>Seguimiento clínico cercano con foco en mejorar la calidad de vida visual del paciente.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="especialidades" class="section section-soft">
+      <div class="container split">
+        <div>
+          <p class="eyebrow">Especialidades diferenciales</p>
+          <h2>Contactología y baja visión</h2>
+          <p>Evaluamos cada caso para indicar la mejor estrategia visual, tanto en lentes de contacto como en rehabilitación para baja visión en adultos y menores.</p>
+        </div>
+        <div class="list-block">
+          <h3>Incluye</h3>
+          <ul>
+            <li>Adaptación de lentes de contacto personalizados</li>
+            <li>Evaluación funcional de visión residual</li>
+            <li>Plan de rehabilitación visual</li>
+            <li>Seguimiento continuo y educación del paciente</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="obras-sociales" class="section container">
+      <div class="section-head">
+        <p class="eyebrow">Cobertura</p>
+        <h2>Obras sociales y prepagas</h2>
+      </div>
+      <ul class="chips" aria-label="Listado de coberturas">
+        <li>IOMA</li>
+        <li>IOSE</li>
+        <li>Sancor Salud</li>
+        <li>OSDE</li>
+        <li>Premedic</li>
+        <li>Avalian</li>
+        <li>Swiss Medical</li>
+        <li>Unión Personal</li>
+        <li>Accord Salud</li>
+      </ul>
+      <p class="helper">Si no encontrás tu cobertura, escribinos por WhatsApp y te confirmamos en el momento.</p>
+    </section>
+
+    <section id="info-pacientes" class="section section-soft">
+      <div class="container split">
+        <div>
+          <p class="eyebrow">Info Pacientes</p>
+          <h2>Antes de venir a la consulta</h2>
+          <p>Traé estudios previos, lentes actuales y credencial de cobertura. Si tu turno es para control pediátrico o baja visión, consultanos por WhatsApp si necesitás preparación especial.</p>
+        </div>
+        <div class="list-block">
+          <h3>Canales directos</h3>
+          <ul>
+            <li><a href="tel:+541146641293">Teléfono: 11 4664-1293</a></li>
+            <li><a href="mailto:info@consultoriosserrano.com.ar">Email: info@consultoriosserrano.com.ar</a></li>
+            <li><a href="https://www.facebook.com/Consultorios.Serrano/" target="_blank" rel="noopener noreferrer">Facebook oficial</a></li>
+            <li><a href="https://www.instagram.com/cos.serrano/" target="_blank" rel="noopener noreferrer">Instagram oficial</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="contacto" class="section cta-band">
+      <div class="container cta-grid">
+        <div>
+          <p class="eyebrow">¿Necesitás un turno?</p>
+          <h2>Respondemos rápido por WhatsApp y teléfono</h2>
+          <p>Coordiná tu consulta, estudio o cirugía con nuestro equipo administrativo.</p>
+        </div>
+        <div class="cta-actions">
+          <a class="btn btn-primary" href="#" data-dynamic-link="turno" target="_blank" rel="noopener noreferrer">Abrir WhatsApp</a>
+          <a class="btn btn-ghost" href="tel:+541146641293">Llamar 11 4664-1293</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="brand footer-brand" href="#">
+          <img src="https://www.clinicaserrano.com.ar/wp-content/uploads/2022/05/logo-top.png" alt="Consultorios Oftalmológicos Serrano" />
+        </a>
+        <p>Serrano 1264, San Miguel, Buenos Aires</p>
+      </div>
+      <div>
+        <p><a href="mailto:info@consultoriosserrano.com.ar">info@consultoriosserrano.com.ar</a></p>
+        <p><a href="tel:+541146641293">11 4664-1293</a></p>
+        <p><a href="https://www.consultoriosserrano.com.ar/category/articulos-y-novedades/" target="_blank" rel="noopener noreferrer">Blog y novedades</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
