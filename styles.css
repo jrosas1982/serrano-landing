@@ -102,6 +102,14 @@ a {
   flex-wrap: wrap;
 }
 
+.nav ul a {
+  color: inherit;
+}
+
+.nav ul a:hover {
+  color: var(--primary);
+}
+
 .brand {
   font-family: "Oxygen", sans-serif;
   text-decoration: none;
@@ -109,7 +117,7 @@ a {
   align-items: center;
 }
 
-.brand img {
+.brand-logo {
   width: 172px;
   height: auto;
   display: block;
@@ -465,6 +473,7 @@ h2 {
     order: 3;
     width: 100%;
   }
+
 }
 
 @media (max-width: 620px) {
