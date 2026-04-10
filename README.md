@@ -27,3 +27,24 @@ El botón/links con `data-dynamic-link="turno"` toman la URL según entorno.
 2. Crear rama de feature/chore.
 3. Commit pequeño y descriptivo.
 4. Push y Pull Request.
+
+## Deploy con Dockploy
+
+Esta landing está preparada para desplegarse como contenedor Nginx.
+
+Archivos clave:
+- `Dockerfile`
+- `docker/nginx.conf`
+- `.dockerignore`
+
+Pasos en Dockploy:
+1. Crear app desde repositorio Git.
+2. Seleccionar branch (normalmente `main`).
+3. Build type: `Dockerfile`.
+4. Exponer puerto contenedor `80`.
+5. Asignar dominio/subdominio.
+6. Activar SSL (Let's Encrypt) desde Dockploy.
+
+Notas:
+- No requiere base de datos.
+- Para entorno de prueba, crear otra app apuntando a una rama de feature.
