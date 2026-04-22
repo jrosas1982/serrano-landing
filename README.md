@@ -88,6 +88,8 @@ Pasos:
 2. Build context: `backend`.
 3. Puerto contenedor: `4000`.
 4. Variables:
+   - `DB_CLIENT` (`sqlite` para local, `mysql` para producción)
+   - `SQLITE_FILE` (solo si `DB_CLIENT=sqlite`)
    - `ADMIN_TOKEN`
    - `CORS_ORIGIN` (dominio del frontend)
    - `MYSQL_HOST`

@@ -4,58 +4,87 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Novedades | Clínica Serrano</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <main class="admin-wrap">
-    <section class="panel auth-panel" id="authPanel">
+  <main class="auth-wrap" id="authPanel">
+    <section class="auth-card">
       <h1>Admin de Novedades</h1>
       <p>Ingresá el token de administración para gestionar publicaciones.</p>
-      <form id="authForm">
+      <form id="authForm" class="auth-form">
         <label for="token">Token admin</label>
         <input id="token" type="password" required />
         <button type="submit">Ingresar</button>
       </form>
-      <p class="hint">Tip: el token se configura con la variable `ADMIN_TOKEN` del backend.</p>
+      <p class="hint">Tip: el token se configura con la variable <code>ADMIN_TOKEN</code> del backend.</p>
     </section>
+  </main>
 
-    <section class="panel hidden" id="editorPanel">
-      <header class="panel-head">
-        <h2>Nueva entrada</h2>
+  <main class="dashboard hidden" id="dashboard">
+    <aside class="sidebar">
+      <div class="brand">Serrano Admin</div>
+      <nav class="menu">
+        <button type="button" class="menu-item active" data-section-target="createSection">Crear entrada</button>
+        <button type="button" class="menu-item" data-section-target="listSection">Listar entradas</button>
+      </nav>
+    </aside>
+
+    <section class="main-panel">
+      <header class="topbar">
+        <div>
+          <h2>Gestión de Novedades</h2>
+          <p class="subtitle">Panel estilo dashboard para Community Manager.</p>
+        </div>
         <button id="logoutBtn" class="ghost">Salir</button>
       </header>
 
-      <form id="newsForm" enctype="multipart/form-data">
-        <input type="hidden" id="newsId" />
+      <section class="content-section" id="createSection">
+        <div class="card">
+          <header class="card-head">
+            <h3>Nueva entrada</h3>
+          </header>
+          <form id="newsForm" enctype="multipart/form-data">
+            <input type="hidden" id="newsId" />
 
-        <label for="title">Título</label>
-        <input id="title" name="title" required maxlength="140" />
+            <label for="title">Título</label>
+            <input id="title" name="title" required maxlength="140" />
 
-        <label for="description">Texto descriptivo</label>
-        <textarea id="description" name="description" rows="5" required></textarea>
+            <label for="description">Texto descriptivo</label>
+            <textarea id="description" name="description" rows="5" required></textarea>
 
-        <label for="status">Estado</label>
-        <select id="status" name="status">
-          <option value="draft">Borrador</option>
-          <option value="published">Publicado</option>
-        </select>
+            <label for="status">Estado inicial</label>
+            <select id="status" name="status">
+              <option value="draft">Desactivado (draft)</option>
+              <option value="published">Activo (published)</option>
+            </select>
 
-        <label for="image">Foto</label>
-        <input id="image" name="image" type="file" accept="image/*" />
+            <label for="image">Foto</label>
+            <input id="image" name="image" type="file" accept="image/*" />
 
-        <div class="actions">
-          <button type="submit" id="saveBtn">Guardar</button>
-          <button type="button" id="cancelEditBtn" class="ghost hidden">Cancelar edición</button>
+            <div class="actions">
+              <button type="submit" id="saveBtn">Guardar</button>
+              <button type="button" id="cancelEditBtn" class="ghost hidden">Cancelar edición</button>
+            </div>
+          </form>
         </div>
-      </form>
+      </section>
 
-      <hr />
-
-      <h3>Entradas cargadas</h3>
-      <div id="newsList" class="news-list"></div>
+      <section class="content-section hidden" id="listSection">
+        <div class="card">
+          <header class="card-head">
+            <h3>Entradas cargadas</h3>
+            <button type="button" id="refreshBtn" class="ghost">Actualizar</button>
+          </header>
+          <div id="newsList" class="news-table-wrap"></div>
+        </div>
+      </section>
     </section>
   </main>
 
   <script src="./app.js"></script>
 </body>
 </html>
+
