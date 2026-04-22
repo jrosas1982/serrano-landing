@@ -28,6 +28,55 @@
     });
   }
 
+  function ensureTurnoModal() {
+    var existing = document.getElementById("turnoChoiceModal");
+    if (existing) return existing;
+
+    var wrapper = document.createElement("div");
+    wrapper.innerHTML = `
+      <dialog id="turnoChoiceModal" class="turno-modal">
+        <form method="dialog" class="turno-modal-card">
+          <button type="submit" class="turno-modal-x" aria-label="Cerrar">×</button>
+          <h3>Te recomendamos usar el portal de autogestión para reservar tu turno de una manera mas ágil</h3>
+          <div class="turno-modal-actions">
+            <a id="turnoWhatsappBtn" class="btn btn-primary" href="#" target="_blank" rel="noopener noreferrer">Usar Whatsapp de todas formas</a>
+            <a id="turnoPortalBtn" class="btn btn-success" href="#" target="_blank" rel="noopener noreferrer">Portal de autogestion</a>
+          </div>
+        </form>
+      </dialog>
+    `;
+
+    document.body.appendChild(wrapper.firstElementChild);
+    return document.getElementById("turnoChoiceModal");
+  }
+
+  function setupTurnoModal(config, env) {
+    var links = getConfigByEnv(config.links, env);
+    var portalUrl = links.turno || "#";
+    var whatsappUrl = links.whatsapp || "#";
+    var modal = ensureTurnoModal();
+
+    var waBtn = document.getElementById("turnoWhatsappBtn");
+    var portalBtn = document.getElementById("turnoPortalBtn");
+    if (waBtn) waBtn.setAttribute("href", whatsappUrl);
+    if (portalBtn) portalBtn.setAttribute("href", portalUrl);
+
+    document.querySelectorAll('[data-dynamic-link="turno"]').forEach(function (el) {
+      if (el.hasAttribute("data-turno-direct")) return;
+      if (el.dataset.turnoModalBound === "1") return;
+      el.dataset.turnoModalBound = "1";
+
+      el.addEventListener("click", function (event) {
+        event.preventDefault();
+        if (typeof modal.showModal === "function") {
+          modal.showModal();
+        } else {
+          window.open(portalUrl, "_blank", "noopener,noreferrer");
+        }
+      });
+    });
+  }
+
   function escapeHtml(text) {
     return String(text || "")
       .replace(/&/g, "&amp;")
@@ -163,6 +212,7 @@
     var env = resolveEnv(config);
 
     applyDynamicLinks(config, env);
+    setupTurnoModal(config, env);
     loadNewsList(config, env);
     loadNewsDetail(config, env);
   }
