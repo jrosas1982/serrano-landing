@@ -5,7 +5,7 @@
       turno: "https://testingserrano.itsos.ar/"
     },
     prod: {
-      turno: "https://serrano.itsos.ar/"
+      turno: "https://serrano.itsos.ar/paciente.php"
     }
   },
   api: {
