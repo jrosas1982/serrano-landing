@@ -12,9 +12,7 @@
   --ok: #28a745;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -24,9 +22,7 @@ body {
   line-height: 1.45;
 }
 
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
 .auth-wrap {
   min-height: 100vh;
@@ -42,6 +38,11 @@ body {
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 12px 28px rgba(17, 39, 64, 0.08);
+}
+
+.auth-card h1 {
+  margin-top: 0;
+  font-weight: 800;
 }
 
 .auth-form {
@@ -63,17 +64,14 @@ body {
 }
 
 .brand {
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.3px;
   padding: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 16px;
 }
 
-.menu {
-  display: grid;
-  gap: 8px;
-}
+.menu { display: grid; gap: 8px; }
 
 .menu-item {
   text-align: left;
@@ -86,18 +84,14 @@ body {
   cursor: pointer;
 }
 
-.menu-item:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-}
+.menu-item:hover { border-color: rgba(255, 255, 255, 0.2); }
 
 .menu-item.active {
   background: rgba(60, 141, 188, 0.22);
   border-color: rgba(60, 141, 188, 0.5);
 }
 
-.main-panel {
-  padding: 22px;
-}
+.main-panel { padding: 22px; }
 
 .topbar {
   display: flex;
@@ -118,9 +112,7 @@ body {
   color: var(--muted);
 }
 
-.content-section {
-  display: block;
-}
+.content-section { display: block; }
 
 .card {
   background: var(--panel);
@@ -158,6 +150,17 @@ select {
   font: inherit;
 }
 
+.rich-editor .ql-toolbar.ql-snow,
+.rich-editor .ql-container.ql-snow {
+  border-color: var(--line);
+}
+
+.rich-editor .ql-editor {
+  min-height: 180px;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  font-size: 0.97rem;
+}
+
 button {
   border: 0;
   background: var(--primary);
@@ -165,12 +168,10 @@ button {
   border-radius: 8px;
   padding: 10px 14px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-button:hover {
-  background: var(--primary-dark);
-}
+button:hover { background: var(--primary-dark); }
 
 button.ghost {
   background: #fff;
@@ -178,9 +179,7 @@ button.ghost {
   border: 1px solid var(--line);
 }
 
-button.ghost:hover {
-  background: #f6f8fb;
-}
+button.ghost:hover { background: #f6f8fb; }
 
 button.small {
   padding: 7px 10px;
@@ -198,30 +197,37 @@ button.danger {
   margin-top: 14px;
 }
 
-.hint {
-  color: var(--muted);
-  font-size: 0.9rem;
+.grid-form {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
-.news-table-wrap {
+.hint {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.table-wrap {
   overflow-x: auto;
 }
 
-.news-table {
+.data-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.news-table th,
-.news-table td {
+.data-table th,
+.data-table td {
   border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: top;
   padding: 10px;
 }
 
-.news-table th {
-  font-size: 0.86rem;
+.data-table th {
+  font-size: 0.84rem;
   letter-spacing: 0.2px;
   color: var(--muted);
   text-transform: uppercase;
@@ -290,38 +296,155 @@ button.danger {
   border-radius: 50%;
 }
 
-.switch input:checked + .slider {
-  background-color: var(--ok);
+.switch input:checked + .slider { background-color: var(--ok); }
+
+.switch input:checked + .slider:before { transform: translateX(20px); }
+
+.switch input:disabled + .slider {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.switch input:checked + .slider:before {
-  transform: translateX(20px);
+.empty { color: var(--muted); }
+
+.news-accordion {
+  display: grid;
+  gap: 10px;
 }
 
-.empty {
+.news-accordion-item {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.news-accordion-head {
+  list-style: none;
+  cursor: pointer;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.news-accordion-head::-webkit-details-marker {
+  display: none;
+}
+
+.news-accordion-title {
+  display: grid;
+  gap: 4px;
+}
+
+.news-accordion-date {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.news-accordion-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.news-accordion-body {
+  border-top: 1px solid var(--line);
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.news-accordion-body p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.toast-stack {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  gap: 8px;
+  z-index: 1200;
+}
+
+.toast {
+  min-width: 240px;
+  max-width: 360px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(16, 38, 61, 0.15);
+  font-weight: 600;
+}
+
+.toast.success {
+  border-color: #bde7c8;
+  color: #14532d;
+}
+
+.toast.error {
+  border-color: #f0b8b7;
+  color: #7a2121;
+}
+
+.confirm-dialog {
+  border: 0;
+  padding: 0;
+  border-radius: 14px;
+  width: min(420px, 92vw);
+}
+
+.confirm-dialog::backdrop {
+  background: rgba(10, 23, 36, 0.48);
+}
+
+.confirm-card {
+  margin: 0;
+  padding: 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.confirm-card h3 {
+  margin: 0;
+}
+
+.confirm-card p {
+  margin: 0;
   color: var(--muted);
 }
 
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 @media (max-width: 980px) {
-  .dashboard {
-    grid-template-columns: 1fr;
-  }
+  .dashboard { grid-template-columns: 1fr; }
 
-  .sidebar {
-    padding: 12px;
-  }
+  .sidebar { padding: 12px; }
 
-  .menu {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  .menu { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
-  .main-panel {
-    padding: 14px;
-  }
+  .main-panel { padding: 14px; }
 
   .topbar {
     flex-direction: column;
     align-items: flex-start;
   }
-}
 
+  .grid-form {
+    grid-template-columns: 1fr;
+  }
+
+  .news-accordion-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

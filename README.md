@@ -17,8 +17,8 @@ Landing page estática preparada para crecer a sitio más grande.
 
 Editar `js/config.js`:
 
-- `env: "dev"` para pruebas.
-- `env: "prod"` para producción.
+- `env: "auto"` recomendado (elige `dev` en localhost y `prod` en dominio real).
+- También podés forzar `env: "dev"` o `env: "prod"`.
 
 Además:
 
@@ -54,7 +54,21 @@ Datos que carga CM:
 4. Ejecutar: `npm start`
 
 Por defecto levanta en `http://localhost:4000`.
-Usa MySQL y crea la tabla `news` automáticamente al iniciar.
+Usa `sqlite` o `mysql` según `DB_CLIENT` y crea tablas automáticamente (`news`, `users`).
+
+Autenticación admin:
+
+- Login con email/password: `POST /api/auth/login`
+- Cambio obligatorio primer uso: `POST /api/auth/change-password-first-use`
+- Sesión actual: `GET /api/auth/me`
+- Cambio de contraseña autenticado: `POST /api/auth/change-password`
+
+Gestión de usuarios (solo `superadmin`):
+
+- `GET /api/admin/users`
+- `POST /api/admin/users` (crea usuario y devuelve password temporal)
+- `PATCH /api/admin/users/:id/status` (activar/desactivar)
+- `POST /api/admin/users/:id/reset-password` (regenera temporal)
 
 ## Deploy con Dockploy
 
@@ -90,8 +104,12 @@ Pasos:
 4. Variables:
    - `DB_CLIENT` (`sqlite` para local, `mysql` para producción)
    - `SQLITE_FILE` (solo si `DB_CLIENT=sqlite`)
-   - `ADMIN_TOKEN`
    - `CORS_ORIGIN` (dominio del frontend)
+   - `JWT_SECRET`
+   - `JWT_EXPIRES_IN`
+   - `JWT_FIRST_USE_EXPIRES_IN`
+   - `SUPERADMIN_EMAIL` (bootstrap inicial)
+   - `SUPERADMIN_PASSWORD` (bootstrap inicial)
    - `MYSQL_HOST`
    - `MYSQL_PORT`
    - `MYSQL_USER`

@@ -10,33 +10,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@400;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css" />
   <script src="js/config.js" defer></script>
+  <script src="js/layout.js" defer></script>
   <script src="js/app.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Saltar al contenido</a>
 
-  <header class="topbar">
-    <div class="container topbar-grid">
-      <p>Serrano 1264, San Miguel, Buenos Aires</p>
-      <a href="tel:+541146641293">11 4664-1293</a>
-      <a href="https://wa.me/5491146641293" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-    </div>
-  </header>
-
-  <nav class="nav container" aria-label="Navegación principal">
-    <a class="brand" href="#" aria-label="Inicio Consultorios Serrano">
-      <img class="brand-logo" src="assets/images/logo/logo-clinica-serr.png" alt="Clínica Oftalmológicos Serrano" />
-    </a>
-    <ul>
-      <li><a href="#estudios">Estudios</a></li>
-      <li><a href="#servicios">Servicios</a></li>
-      <li><a href="#especialidades">Baja Visión</a></li>
-      <li><a href="#novedades">Novedades</a></li>
-      <li><a href="#info-pacientes">Info Pacientes</a></li>
-      <li><a href="#contacto">Contacto</a></li>
-    </ul>
-    <a class="btn btn-primary nav-cta" href="#" data-dynamic-link="turno" target="_blank" rel="noopener noreferrer">Sacar turno</a>
-  </nav>
+  <div data-include="partials/header.html"></div>
 
   <main id="main">
     <section class="hero">
@@ -200,16 +180,6 @@
       </div>
     </section>
 
-    <section id="novedades" class="section container">
-      <div class="section-head">
-        <p class="eyebrow">Newsletter</p>
-        <h2>Novedades de la clínica</h2>
-      </div>
-      <div id="newsletter-list" class="newsletter-grid">
-        <p class="helper">Cargando novedades...</p>
-      </div>
-    </section>
-
     <section id="contacto" class="section cta-band">
       <div class="container cta-grid">
         <div>
@@ -225,22 +195,6 @@
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="container footer-grid">
-      <div>
-        <a class="brand footer-brand" href="#">
-          <img class="brand-logo" src="assets/images/logo/logo-clinica-serr.png" alt="Clínica Oftalmológicos Serrano" />
-        </a>
-        <p>Serrano 1264, San Miguel, Buenos Aires</p>
-      </div>
-      <div>
-        <p><a href="mailto:info@consultoriosserrano.com.ar">info@consultoriosserrano.com.ar</a></p>
-        <p><a href="tel:+541146641293">11 4664-1293</a></p>
-        <p><a href="https://www.consultoriosserrano.com.ar/category/articulos-y-novedades/" target="_blank" rel="noopener noreferrer">Blog y novedades</a></p>
-      </div>
-    </div>
-  </footer>
+  <div data-include="partials/footer.html"></div>
 </body>
 </html>
-
-

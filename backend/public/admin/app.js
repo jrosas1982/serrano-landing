@@ -1,29 +1,134 @@
 ﻿(function () {
   var authPanel = document.getElementById("authPanel");
+  var forceChangePanel = document.getElementById("forceChangePanel");
   var dashboard = document.getElementById("dashboard");
+
   var authForm = document.getElementById("authForm");
+  var forceChangeForm = document.getElementById("forceChangeForm");
   var newsForm = document.getElementById("newsForm");
-  var newsList = document.getElementById("newsList");
-  var cancelEditBtn = document.getElementById("cancelEditBtn");
+  var userForm = document.getElementById("userForm");
+
   var logoutBtn = document.getElementById("logoutBtn");
   var refreshBtn = document.getElementById("refreshBtn");
+  var refreshUsersBtn = document.getElementById("refreshUsersBtn");
+  var cancelEditBtn = document.getElementById("cancelEditBtn");
 
-  var tokenInput = document.getElementById("token");
+  var usersMenuBtn = document.getElementById("usersMenuBtn");
+  var sessionText = document.getElementById("sessionText");
+  var toastStack = document.getElementById("toastStack");
+  var confirmDialog = document.getElementById("confirmDialog");
+  var confirmTitle = document.getElementById("confirmTitle");
+  var confirmMessage = document.getElementById("confirmMessage");
+  var confirmOkBtn = document.getElementById("confirmOkBtn");
+
+  var emailInput = document.getElementById("email");
+  var passwordInput = document.getElementById("password");
+  var newPasswordInput = document.getElementById("newPassword");
+
   var idInput = document.getElementById("newsId");
   var titleInput = document.getElementById("title");
-  var descriptionInput = document.getElementById("description");
+  var descriptionEditor = document.getElementById("descriptionEditor");
   var statusInput = document.getElementById("status");
   var imageInput = document.getElementById("image");
+
+  var userEmailInput = document.getElementById("userEmail");
+  var userRoleInput = document.getElementById("userRole");
+
+  var tempPasswordHint = document.getElementById("tempPasswordHint");
+  var newsList = document.getElementById("newsList");
+  var usersList = document.getElementById("usersList");
 
   var sectionButtons = Array.from(document.querySelectorAll("[data-section-target]"));
   var sections = Array.from(document.querySelectorAll(".content-section"));
 
-  var token = localStorage.getItem("news_admin_token") || "";
-  var itemsCache = [];
+  var authToken = localStorage.getItem("news_access_token") || "";
+  var firstUseToken = "";
+  var currentUser = null;
+  var newsCache = [];
+  var quill = null;
 
-  function setLoggedIn(isLogged) {
-    authPanel.classList.toggle("hidden", isLogged);
-    dashboard.classList.toggle("hidden", !isLogged);
+  function escapeHtml(text) {
+    return String(text || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function stripHtml(html) {
+    return String(html || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  }
+
+  function initRichEditor() {
+    if (!descriptionEditor || typeof window.Quill === "undefined") return;
+    quill = new window.Quill("#descriptionEditor", {
+      theme: "snow",
+      placeholder: "Escribí la nota...",
+      modules: {
+        toolbar: [
+          [{ header: [3, 4, false] }],
+          ["bold", "italic", "underline", "strike"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          ["blockquote", "link"],
+          ["clean"]
+        ]
+      }
+    });
+  }
+
+  function getDescriptionHtml() {
+    if (quill) {
+      return (quill.root.innerHTML || "").trim();
+    }
+    return "";
+  }
+
+  function setDescriptionHtml(html) {
+    if (!quill) return;
+    quill.clipboard.dangerouslyPasteHTML(html || "");
+  }
+
+  function showToast(kind, message) {
+    var el = document.createElement("div");
+    el.className = `toast ${kind || "success"}`;
+    el.textContent = message;
+    toastStack.appendChild(el);
+    setTimeout(function () {
+      el.remove();
+    }, 3200);
+  }
+
+  function showError(err, fallbackMessage) {
+    var message = fallbackMessage;
+    if (err && err.message) {
+      try {
+        var parsed = JSON.parse(err.message);
+        message = parsed.error || fallbackMessage;
+      } catch (_e) {
+        message = err.message;
+      }
+    }
+    showToast("error", message);
+  }
+
+  function confirmAction(title, message, confirmText) {
+    return new Promise(function (resolve) {
+      confirmTitle.textContent = title || "Confirmar acción";
+      confirmMessage.textContent = message || "";
+      confirmOkBtn.textContent = confirmText || "Confirmar";
+      confirmDialog.showModal();
+      confirmDialog.addEventListener("close", function handler() {
+        confirmDialog.removeEventListener("close", handler);
+        resolve(confirmDialog.returnValue === "ok");
+      });
+    });
+  }
+
+  function setScreen(name) {
+    authPanel.classList.toggle("hidden", name !== "login");
+    forceChangePanel.classList.toggle("hidden", name !== "firstUse");
+    dashboard.classList.toggle("hidden", name !== "dashboard");
   }
 
   function setActiveSection(sectionId) {
@@ -36,31 +141,38 @@
     });
   }
 
-  function resetForm() {
+  function resetNewsForm() {
     idInput.value = "";
     titleInput.value = "";
-    descriptionInput.value = "";
+    setDescriptionHtml("");
     statusInput.value = "draft";
     imageInput.value = "";
     cancelEditBtn.classList.add("hidden");
   }
 
-  function escapeHtml(text) {
-    return String(text || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/\"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+  function updateSessionUI() {
+    if (!currentUser) {
+      sessionText.textContent = "";
+      usersMenuBtn.classList.add("hidden");
+      return;
+    }
+
+    sessionText.textContent = `${currentUser.email} · rol ${currentUser.role}`;
+    usersMenuBtn.classList.toggle("hidden", currentUser.role !== "superadmin");
   }
 
   async function api(path, options) {
+    var headers = {
+      ...(options && options.headers ? options.headers : {})
+    };
+
+    if (authToken) {
+      headers.Authorization = `Bearer ${authToken}`;
+    }
+
     var res = await fetch(path, {
       ...(options || {}),
-      headers: {
-        ...(options && options.headers ? options.headers : {}),
-        "x-admin-token": token
-      }
+      headers
     });
 
     if (!res.ok) {
@@ -72,43 +184,85 @@
     return res.json();
   }
 
-  function renderTable(items) {
-    if (!items.length) {
-      return '<p class="empty">No hay entradas aún.</p>';
-    }
+  async function login(email, password) {
+    var res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, password: password })
+    });
+
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Credenciales inválidas");
+
+    return data;
+  }
+
+  function renderNewsTable(items) {
+    if (!items.length) return '<p class="empty">No hay entradas aún.</p>';
 
     return `
-      <table class="news-table">
+      <div class="news-accordion">
+        ${items.map(function (item) {
+          var date = new Date(item.createdAt).toLocaleString("es-AR");
+          var statusLabel = item.status === "published" ? "Activo" : "Desactivado";
+          return `
+            <details class="news-accordion-item">
+              <summary class="news-accordion-head">
+                <div class="news-accordion-title">
+                  <strong>${escapeHtml(item.title)}</strong>
+                  <span class="news-accordion-date">${date}</span>
+                </div>
+                <div class="news-accordion-meta">
+                  <span class="badge ${item.status}">${statusLabel}</span>
+                  <label class="switch" title="Activar / Desactivar">
+                    <input type="checkbox" data-toggle-status="${item.id}" ${item.status === "published" ? "checked" : ""} />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </summary>
+              <div class="news-accordion-body">
+                <p>${escapeHtml(stripHtml(item.description)).replace(/\n/g, "<br>")}</p>
+                <div class="row-actions">
+                  <button type="button" data-edit="${item.id}" class="ghost small">Editar</button>
+                  <button type="button" data-delete="${item.id}" class="ghost small danger">Eliminar</button>
+                </div>
+              </div>
+            </details>
+          `;
+        }).join("")}
+      </div>
+    `;
+  }
+
+  function renderUsersTable(items) {
+    if (!items.length) return '<p class="empty">No hay usuarios.</p>';
+
+    return `
+      <table class="data-table">
         <thead>
           <tr>
-            <th>Título</th>
-            <th>Estado</th>
-            <th>Activar / Desactivar</th>
-            <th>Fecha</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Activo</th>
+            <th>Primer cambio</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          ${items.map(function (item) {
-            var checked = item.status === "published" ? "checked" : "";
-            var stateLabel = item.status === "published" ? "Activo" : "Desactivado";
+          ${items.map(function (user) {
             return `
               <tr>
-                <td>
-                  <strong>${escapeHtml(item.title)}</strong>
-                  <div class="desc">${escapeHtml(item.description)}</div>
-                </td>
-                <td><span class="badge ${item.status}">${stateLabel}</span></td>
+                <td>${escapeHtml(user.email)}</td>
+                <td><span class="badge ${user.role === "superadmin" ? "published" : "draft"}">${user.role}</span></td>
                 <td>
                   <label class="switch">
-                    <input type="checkbox" data-toggle-status="${item.id}" ${checked} />
+                    <input type="checkbox" data-user-toggle="${user.id}" ${user.isActive ? "checked" : ""} ${currentUser && currentUser.id === user.id ? "disabled" : ""} />
                     <span class="slider"></span>
                   </label>
                 </td>
-                <td>${new Date(item.createdAt).toLocaleString("es-AR")}</td>
+                <td>${user.mustChangePassword ? "Pendiente" : "OK"}</td>
                 <td class="row-actions">
-                  <button type="button" data-edit="${item.id}" class="ghost small">Editar</button>
-                  <button type="button" data-delete="${item.id}" class="ghost small danger">Eliminar</button>
+                  <button type="button" data-reset-user="${user.id}" class="ghost small">Reset pass</button>
                 </td>
               </tr>
             `;
@@ -120,65 +274,106 @@
 
   async function loadNews() {
     var data = await api("/api/admin/news");
-    itemsCache = data.items || [];
-    newsList.innerHTML = renderTable(itemsCache);
+    newsCache = data.items || [];
+    newsList.innerHTML = renderNewsTable(newsCache);
   }
 
-  async function updateStatus(itemId, newStatus) {
-    var item = itemsCache.find(function (entry) {
-      return String(entry.id) === String(itemId);
-    });
-
-    if (!item) return;
-
-    var formData = new FormData();
-    formData.append("title", item.title);
-    formData.append("description", item.description);
-    formData.append("status", newStatus);
-
-    await api(`/api/admin/news/${item.id}`, {
-      method: "PUT",
-      body: formData
-    });
-
-    await loadNews();
+  async function loadUsers() {
+    if (!currentUser || currentUser.role !== "superadmin") return;
+    var data = await api("/api/admin/users");
+    usersList.innerHTML = renderUsersTable(data.items || []);
   }
 
-  function openEdit(itemId) {
-    var row = itemsCache.find(function (item) {
-      return String(item.id) === String(itemId);
-    });
+  function clearSession() {
+    authToken = "";
+    currentUser = null;
+    firstUseToken = "";
+    localStorage.removeItem("news_access_token");
+    updateSessionUI();
+  }
 
-    if (!row) return;
+  async function refreshSession() {
+    if (!authToken) {
+      setScreen("login");
+      return;
+    }
 
-    idInput.value = row.id;
-    titleInput.value = row.title;
-    descriptionInput.value = row.description;
-    statusInput.value = row.status;
-    cancelEditBtn.classList.remove("hidden");
-    setActiveSection("createSection");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    try {
+      var me = await api("/api/auth/me");
+      currentUser = me.user;
+      updateSessionUI();
+      setScreen("dashboard");
+      setActiveSection("listSection");
+      await loadNews();
+      await loadUsers();
+    } catch (_err) {
+      clearSession();
+      setScreen("login");
+    }
   }
 
   authForm.addEventListener("submit", async function (e) {
     e.preventDefault();
-    token = tokenInput.value.trim();
-    localStorage.setItem("news_admin_token", token);
 
     try {
-      await loadNews();
-      setLoggedIn(true);
+      var data = await login(emailInput.value.trim(), passwordInput.value);
+      if (data.mustChangePassword) {
+        firstUseToken = data.changeToken;
+        setScreen("firstUse");
+        return;
+      }
+
+      authToken = data.token;
+      localStorage.setItem("news_access_token", authToken);
+      currentUser = data.user;
+      updateSessionUI();
+      setScreen("dashboard");
       setActiveSection("listSection");
-    } catch (_err) {
-      alert("Token inválido.");
-      localStorage.removeItem("news_admin_token");
-      token = "";
+      await loadNews();
+      await loadUsers();
+      showToast("success", "Sesión iniciada");
+    } catch (err) {
+      showError(err, "No se pudo iniciar sesión");
+    }
+  });
+
+  forceChangeForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    try {
+      var res = await fetch("/api/auth/change-password-first-use", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          changeToken: firstUseToken,
+          newPassword: newPasswordInput.value
+        })
+      });
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.error || "No se pudo cambiar contraseña");
+
+      authToken = data.token;
+      localStorage.setItem("news_access_token", authToken);
+      currentUser = data.user;
+      firstUseToken = "";
+      newPasswordInput.value = "";
+
+      updateSessionUI();
+      setScreen("dashboard");
+      setActiveSection("listSection");
+      await loadNews();
+      await loadUsers();
+      showToast("success", "Contraseña actualizada");
+    } catch (err) {
+      showError(err, "No se pudo cambiar contraseña");
     }
   });
 
   sectionButtons.forEach(function (btn) {
     btn.addEventListener("click", function () {
-      setActiveSection(btn.getAttribute("data-section-target"));
+      var target = btn.getAttribute("data-section-target");
+      if (target === "usersSection" && (!currentUser || currentUser.role !== "superadmin")) return;
+      setActiveSection(target);
     });
   });
 
@@ -187,67 +382,101 @@
 
     var formData = new FormData();
     formData.append("title", titleInput.value);
-    formData.append("description", descriptionInput.value);
+    formData.append("description", getDescriptionHtml());
     formData.append("status", statusInput.value);
     if (imageInput.files[0]) formData.append("image", imageInput.files[0]);
 
     try {
       if (idInput.value) {
-        await api(`/api/admin/news/${idInput.value}`, {
-          method: "PUT",
-          body: formData
-        });
+        await api(`/api/admin/news/${idInput.value}`, { method: "PUT", body: formData });
       } else {
-        await api("/api/admin/news", {
-          method: "POST",
-          body: formData
-        });
+        await api("/api/admin/news", { method: "POST", body: formData });
       }
-
-      resetForm();
+      resetNewsForm();
       await loadNews();
       setActiveSection("listSection");
+      showToast("success", "Entrada guardada");
     } catch (err) {
-      alert("No se pudo guardar: " + err.message);
+      showError(err, "No se pudo guardar");
     }
   });
 
   cancelEditBtn.addEventListener("click", function () {
-    resetForm();
+    resetNewsForm();
   });
 
   logoutBtn.addEventListener("click", function () {
-    localStorage.removeItem("news_admin_token");
-    token = "";
-    tokenInput.value = "";
-    setLoggedIn(false);
+    clearSession();
+    setScreen("login");
   });
 
   refreshBtn.addEventListener("click", async function () {
     try {
       await loadNews();
+      showToast("success", "Listado actualizado");
     } catch (err) {
-      alert("No se pudo actualizar: " + err.message);
+      showError(err, "No se pudo actualizar");
+    }
+  });
+
+  refreshUsersBtn.addEventListener("click", async function () {
+    try {
+      await loadUsers();
+      showToast("success", "Usuarios actualizados");
+    } catch (err) {
+      showError(err, "No se pudo actualizar usuarios");
+    }
+  });
+
+  userForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    tempPasswordHint.textContent = "";
+
+    try {
+      var res = await api("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: userEmailInput.value.trim(),
+          role: userRoleInput.value
+        })
+      });
+
+      userEmailInput.value = "";
+      userRoleInput.value = "admin";
+      tempPasswordHint.textContent = `Usuario creado. Password temporal: ${res.tempPassword}`;
+      await loadUsers();
+      showToast("success", "Usuario creado");
+    } catch (err) {
+      showError(err, "No se pudo crear usuario");
     }
   });
 
   newsList.addEventListener("click", async function (e) {
-    var target = e.target;
-    var editId = target.getAttribute("data-edit");
-    var deleteId = target.getAttribute("data-delete");
+    var editId = e.target.getAttribute("data-edit");
+    var deleteId = e.target.getAttribute("data-delete");
 
     if (editId) {
-      openEdit(editId);
+      var row = newsCache.find(function (item) { return String(item.id) === String(editId); });
+      if (!row) return;
+      idInput.value = row.id;
+      titleInput.value = row.title;
+      setDescriptionHtml(row.description || "");
+      statusInput.value = row.status;
+      cancelEditBtn.classList.remove("hidden");
+      setActiveSection("createSection");
       return;
     }
 
     if (deleteId) {
-      if (!confirm("¿Eliminar esta entrada?")) return;
+      var confirmed = await confirmAction("Eliminar entrada", "Esta acción no se puede deshacer.", "Eliminar");
+      if (!confirmed) return;
       try {
         await api(`/api/admin/news/${deleteId}`, { method: "DELETE" });
         await loadNews();
+        showToast("success", "Entrada eliminada");
       } catch (err) {
-        alert("No se pudo eliminar: " + err.message);
+        showError(err, "No se pudo eliminar");
       }
     }
   });
@@ -256,31 +485,56 @@
     var toggleId = e.target.getAttribute("data-toggle-status");
     if (!toggleId) return;
 
-    var nextStatus = e.target.checked ? "published" : "draft";
+    var row = newsCache.find(function (item) { return String(item.id) === String(toggleId); });
+    if (!row) return;
+
+    var formData = new FormData();
+    formData.append("title", row.title);
+    formData.append("description", row.description);
+    formData.append("status", e.target.checked ? "published" : "draft");
 
     try {
-      await updateStatus(toggleId, nextStatus);
+      await api(`/api/admin/news/${row.id}`, { method: "PUT", body: formData });
+      await loadNews();
+      showToast("success", "Estado de entrada actualizado");
     } catch (err) {
-      alert("No se pudo cambiar el estado: " + err.message);
+      showError(err, "No se pudo cambiar estado");
       await loadNews();
     }
   });
 
-  (async function bootstrap() {
-    if (!token) {
-      setLoggedIn(false);
-      return;
-    }
+  usersList.addEventListener("change", async function (e) {
+    var userId = e.target.getAttribute("data-user-toggle");
+    if (!userId) return;
 
     try {
-      await loadNews();
-      setLoggedIn(true);
-      setActiveSection("listSection");
-    } catch (_err) {
-      localStorage.removeItem("news_admin_token");
-      token = "";
-      setLoggedIn(false);
+      await api(`/api/admin/users/${userId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: e.target.checked })
+      });
+      await loadUsers();
+      showToast("success", "Estado de usuario actualizado");
+    } catch (err) {
+      showError(err, "No se pudo actualizar usuario");
+      await loadUsers();
     }
-  })();
-})();
+  });
 
+  usersList.addEventListener("click", async function (e) {
+    var resetId = e.target.getAttribute("data-reset-user");
+    if (!resetId) return;
+
+    try {
+      var res = await api(`/api/admin/users/${resetId}/reset-password`, { method: "POST" });
+      tempPasswordHint.textContent = `Password temporal regenerada: ${res.tempPassword}`;
+      await loadUsers();
+      showToast("success", "Password temporal regenerada");
+    } catch (err) {
+      showError(err, "No se pudo resetear password");
+    }
+  });
+
+  initRichEditor();
+  refreshSession();
+})();
