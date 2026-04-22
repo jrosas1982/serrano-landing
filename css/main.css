@@ -227,10 +227,75 @@ a {
   color: #fff;
 }
 
+.btn-success {
+  background: linear-gradient(120deg, #2c9c58, #3fc06f);
+  color: #fff;
+  box-shadow: 0 10px 26px rgba(44, 156, 88, 0.26);
+}
+
+.btn-success:hover {
+  box-shadow: 0 14px 30px rgba(44, 156, 88, 0.34);
+}
+
 .btn-ghost {
   border-color: var(--line);
   background: #fff;
   color: var(--ink);
+}
+
+.turno-modal {
+  border: 0;
+  padding: 0;
+  border-radius: 16px;
+  width: min(560px, 92vw);
+}
+
+.turno-modal::backdrop {
+  background: rgba(11, 34, 57, 0.52);
+}
+
+.turno-modal-card {
+  margin: 0;
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+  background: #fff;
+  position: relative;
+}
+
+.turno-modal-card h3 {
+  font-size: 1.25rem;
+  line-height: 1.35;
+}
+
+.turno-modal-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.turno-modal-x {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: #2d3b4d;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+}
+
+.turno-modal-x:hover {
+  background: #f2f7fd;
+  transform: none;
 }
 
 .hero {
