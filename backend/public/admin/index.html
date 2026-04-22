@@ -1,0 +1,61 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Novedades | Clínica Serrano</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="admin-wrap">
+    <section class="panel auth-panel" id="authPanel">
+      <h1>Admin de Novedades</h1>
+      <p>Ingresá el token de administración para gestionar publicaciones.</p>
+      <form id="authForm">
+        <label for="token">Token admin</label>
+        <input id="token" type="password" required />
+        <button type="submit">Ingresar</button>
+      </form>
+      <p class="hint">Tip: el token se configura con la variable `ADMIN_TOKEN` del backend.</p>
+    </section>
+
+    <section class="panel hidden" id="editorPanel">
+      <header class="panel-head">
+        <h2>Nueva entrada</h2>
+        <button id="logoutBtn" class="ghost">Salir</button>
+      </header>
+
+      <form id="newsForm" enctype="multipart/form-data">
+        <input type="hidden" id="newsId" />
+
+        <label for="title">Título</label>
+        <input id="title" name="title" required maxlength="140" />
+
+        <label for="description">Texto descriptivo</label>
+        <textarea id="description" name="description" rows="5" required></textarea>
+
+        <label for="status">Estado</label>
+        <select id="status" name="status">
+          <option value="draft">Borrador</option>
+          <option value="published">Publicado</option>
+        </select>
+
+        <label for="image">Foto</label>
+        <input id="image" name="image" type="file" accept="image/*" />
+
+        <div class="actions">
+          <button type="submit" id="saveBtn">Guardar</button>
+          <button type="button" id="cancelEditBtn" class="ghost hidden">Cancelar edición</button>
+        </div>
+      </form>
+
+      <hr />
+
+      <h3>Entradas cargadas</h3>
+      <div id="newsList" class="news-list"></div>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
