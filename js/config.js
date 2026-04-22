@@ -1,5 +1,5 @@
 ﻿window.APP_CONFIG = {
-  env: "prod",
+  env: "auto",
   links: {
     dev: {
       turno: "https://testingserrano.itsos.ar/"

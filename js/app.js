@@ -1,4 +1,18 @@
 ﻿(function () {
+  function resolveEnv(config) {
+    var requested = (config && config.env) || "prod";
+    if (requested !== "auto") return requested;
+
+    var host = (window.location && window.location.hostname) || "";
+    var isLocal =
+      host === "localhost" ||
+      host === "127.0.0.1" ||
+      host === "::1" ||
+      host.endsWith(".local");
+
+    return isLocal ? "dev" : "prod";
+  }
+
   function getConfigByEnv(map, env) {
     return (map && (map[env] || map.prod)) || {};
   }
@@ -71,7 +85,7 @@
 
   window.addEventListener("DOMContentLoaded", function () {
     var config = window.APP_CONFIG || {};
-    var env = config.env || "prod";
+    var env = resolveEnv(config);
 
     applyDynamicLinks(config, env);
     loadNews(config, env);

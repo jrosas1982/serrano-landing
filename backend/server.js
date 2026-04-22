@@ -8,6 +8,7 @@ const mysql = require("mysql2/promise");
 const PORT = Number(process.env.PORT || 4000);
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "change-this-token";
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "*";
+const DB_CLIENT = (process.env.DB_CLIENT || (process.env.NODE_ENV === "production" ? "mysql" : "sqlite")).toLowerCase();
 
 const MYSQL_HOST = process.env.MYSQL_HOST || "localhost";
 const MYSQL_PORT = Number(process.env.MYSQL_PORT || 3306);
@@ -18,18 +19,11 @@ const MYSQL_DATABASE = process.env.MYSQL_DATABASE || "mysql";
 const app = express();
 const rootDir = __dirname;
 const uploadsDir = path.join(rootDir, "uploads");
+const dataDir = path.join(rootDir, "data");
+const sqlitePath = process.env.SQLITE_FILE || path.join(dataDir, "news.db");
 
 fs.mkdirSync(uploadsDir, { recursive: true });
-
-const pool = mysql.createPool({
-  host: MYSQL_HOST,
-  port: MYSQL_PORT,
-  user: MYSQL_USER,
-  password: MYSQL_PASSWORD,
-  database: MYSQL_DATABASE,
-  waitForConnections: true,
-  connectionLimit: 10
-});
+fs.mkdirSync(dataDir, { recursive: true });
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadsDir),
@@ -71,30 +65,199 @@ function asyncHandler(handler) {
   };
 }
 
-async function getNewsById(id) {
-  const [rows] = await pool.query(
-    `SELECT id, title, description, image_url AS imageUrl, status, created_at AS createdAt, updated_at AS updatedAt
-     FROM news
-     WHERE id = ?`,
-    [id]
-  );
-  return rows[0] || null;
+function mapRow(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    imageUrl: row.image_url || row.imageUrl || null,
+    status: row.status,
+    createdAt: row.created_at || row.createdAt,
+    updatedAt: row.updated_at || row.updatedAt
+  };
 }
 
+function createSqliteRepo() {
+  let Database;
+  try {
+    Database = require("better-sqlite3");
+  } catch (_err) {
+    throw new Error(
+      "SQLite selected but better-sqlite3 is not installed. Run: npm install --include=optional"
+    );
+  }
+
+  const db = new Database(sqlitePath);
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS news (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL,
+      image_url TEXT,
+      status TEXT NOT NULL DEFAULT 'draft',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+  `);
+
+  return {
+    type: "sqlite",
+    async getById(id) {
+      const row = db
+        .prepare(
+          `SELECT id, title, description, image_url, status, created_at, updated_at
+           FROM news
+           WHERE id = ?`
+        )
+        .get(id);
+      return mapRow(row);
+    },
+    async listPublished(limit = 20) {
+      const rows = db
+        .prepare(
+          `SELECT id, title, description, image_url, status, created_at, updated_at
+           FROM news
+           WHERE status = 'published'
+           ORDER BY datetime(created_at) DESC
+           LIMIT ?`
+        )
+        .all(limit);
+      return rows.map(mapRow);
+    },
+    async listAll() {
+      const rows = db
+        .prepare(
+          `SELECT id, title, description, image_url, status, created_at, updated_at
+           FROM news
+           ORDER BY datetime(created_at) DESC`
+        )
+        .all();
+      return rows.map(mapRow);
+    },
+    async create(payload) {
+      const now = new Date().toISOString();
+      const result = db
+        .prepare(
+          `INSERT INTO news (title, description, image_url, status, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?)`
+        )
+        .run(payload.title, payload.description, payload.imageUrl, payload.status, now, now);
+      return this.getById(result.lastInsertRowid);
+    },
+    async update(id, payload) {
+      const current = db.prepare("SELECT * FROM news WHERE id = ?").get(id);
+      if (!current) return null;
+      const now = new Date().toISOString();
+      db.prepare(
+        `UPDATE news
+         SET title = ?, description = ?, image_url = ?, status = ?, updated_at = ?
+         WHERE id = ?`
+      ).run(payload.title, payload.description, payload.imageUrl, payload.status, now, id);
+      return this.getById(id);
+    },
+    async remove(id) {
+      const existing = db.prepare("SELECT id FROM news WHERE id = ?").get(id);
+      if (!existing) return false;
+      db.prepare("DELETE FROM news WHERE id = ?").run(id);
+      return true;
+    }
+  };
+}
+
+async function createMysqlRepo() {
+  const pool = mysql.createPool({
+    host: MYSQL_HOST,
+    port: MYSQL_PORT,
+    user: MYSQL_USER,
+    password: MYSQL_PASSWORD,
+    database: MYSQL_DATABASE,
+    waitForConnections: true,
+    connectionLimit: 10
+  });
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS news (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      description TEXT NOT NULL,
+      image_url VARCHAR(512) NULL,
+      status ENUM('draft','published') NOT NULL DEFAULT 'draft',
+      created_at VARCHAR(40) NOT NULL,
+      updated_at VARCHAR(40) NOT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `);
+
+  return {
+    type: "mysql",
+    async getById(id) {
+      const [rows] = await pool.query(
+        `SELECT id, title, description, image_url, status, created_at, updated_at
+         FROM news
+         WHERE id = ?`,
+        [id]
+      );
+      return mapRow(rows[0]);
+    },
+    async listPublished(limit = 20) {
+      const [rows] = await pool.query(
+        `SELECT id, title, description, image_url, status, created_at, updated_at
+         FROM news
+         WHERE status = 'published'
+         ORDER BY created_at DESC
+         LIMIT ?`,
+        [limit]
+      );
+      return rows.map(mapRow);
+    },
+    async listAll() {
+      const [rows] = await pool.query(
+        `SELECT id, title, description, image_url, status, created_at, updated_at
+         FROM news
+         ORDER BY created_at DESC`
+      );
+      return rows.map(mapRow);
+    },
+    async create(payload) {
+      const now = new Date().toISOString();
+      const [result] = await pool.query(
+        `INSERT INTO news (title, description, image_url, status, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [payload.title, payload.description, payload.imageUrl, payload.status, now, now]
+      );
+      return this.getById(result.insertId);
+    },
+    async update(id, payload) {
+      const [currentRows] = await pool.query("SELECT id FROM news WHERE id = ?", [id]);
+      if (!currentRows.length) return null;
+      const now = new Date().toISOString();
+      await pool.query(
+        `UPDATE news
+         SET title = ?, description = ?, image_url = ?, status = ?, updated_at = ?
+         WHERE id = ?`,
+        [payload.title, payload.description, payload.imageUrl, payload.status, now, id]
+      );
+      return this.getById(id);
+    },
+    async remove(id) {
+      const [existingRows] = await pool.query("SELECT id FROM news WHERE id = ?", [id]);
+      if (!existingRows.length) return false;
+      await pool.query("DELETE FROM news WHERE id = ?", [id]);
+      return true;
+    }
+  };
+}
+
+let repo;
+
 app.get("/health", (_req, res) => {
-  res.json({ ok: true });
+  res.json({ ok: true, db: repo ? repo.type : DB_CLIENT });
 });
 
 app.get(
   "/api/news",
   asyncHandler(async (_req, res) => {
-    const [rows] = await pool.query(
-      `SELECT id, title, description, image_url AS imageUrl, status, created_at AS createdAt, updated_at AS updatedAt
-       FROM news
-       WHERE status = 'published'
-       ORDER BY created_at DESC
-       LIMIT 20`
-    );
+    const rows = await repo.listPublished(20);
     res.json({ items: rows });
   })
 );
@@ -103,11 +266,7 @@ app.get(
   "/api/admin/news",
   requireAdmin,
   asyncHandler(async (_req, res) => {
-    const [rows] = await pool.query(
-      `SELECT id, title, description, image_url AS imageUrl, status, created_at AS createdAt, updated_at AS updatedAt
-       FROM news
-       ORDER BY created_at DESC`
-    );
+    const rows = await repo.listAll();
     res.json({ items: rows });
   })
 );
@@ -126,15 +285,7 @@ app.post(
     if (!isValidStatus(status)) return res.status(400).json({ error: "Invalid status" });
 
     const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-    const now = new Date().toISOString();
-
-    const [result] = await pool.query(
-      `INSERT INTO news (title, description, image_url, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [title, description, imageUrl, status, now, now]
-    );
-
-    const created = await getNewsById(result.insertId);
+    const created = await repo.create({ title, description, status, imageUrl });
     res.status(201).json(created);
   })
 );
@@ -147,8 +298,7 @@ app.put(
     const id = Number(req.params.id);
     if (!Number.isFinite(id) || id <= 0) return res.status(400).json({ error: "Invalid id" });
 
-    const [currentRows] = await pool.query("SELECT * FROM news WHERE id = ?", [id]);
-    const current = currentRows[0];
+    const current = await repo.getById(id);
     if (!current) return res.status(404).json({ error: "Not found" });
 
     const title = (req.body.title || current.title).trim();
@@ -159,17 +309,8 @@ app.put(
     if (!description) return res.status(400).json({ error: "Description is required" });
     if (!isValidStatus(status)) return res.status(400).json({ error: "Invalid status" });
 
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : current.image_url;
-    const now = new Date().toISOString();
-
-    await pool.query(
-      `UPDATE news
-       SET title = ?, description = ?, image_url = ?, status = ?, updated_at = ?
-       WHERE id = ?`,
-      [title, description, imageUrl, status, now, id]
-    );
-
-    const updated = await getNewsById(id);
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : current.imageUrl;
+    const updated = await repo.update(id, { title, description, status, imageUrl });
     res.json(updated);
   })
 );
@@ -180,11 +321,8 @@ app.delete(
   asyncHandler(async (req, res) => {
     const id = Number(req.params.id);
     if (!Number.isFinite(id) || id <= 0) return res.status(400).json({ error: "Invalid id" });
-
-    const [existingRows] = await pool.query("SELECT id FROM news WHERE id = ?", [id]);
-    if (!existingRows.length) return res.status(404).json({ error: "Not found" });
-
-    await pool.query("DELETE FROM news WHERE id = ?", [id]);
+    const removed = await repo.remove(id);
+    if (!removed) return res.status(404).json({ error: "Not found" });
     res.status(204).send();
   })
 );
@@ -196,21 +334,17 @@ app.use((err, _req, res, _next) => {
 });
 
 async function bootstrap() {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS news (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      title VARCHAR(255) NOT NULL,
-      description TEXT NOT NULL,
-      image_url VARCHAR(512) NULL,
-      status ENUM('draft','published') NOT NULL DEFAULT 'draft',
-      created_at VARCHAR(40) NOT NULL,
-      updated_at VARCHAR(40) NOT NULL
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `);
+  if (DB_CLIENT === "sqlite") {
+    repo = createSqliteRepo();
+  } else if (DB_CLIENT === "mysql") {
+    repo = await createMysqlRepo();
+  } else {
+    throw new Error(`Unsupported DB_CLIENT: ${DB_CLIENT}`);
+  }
 
   app.listen(PORT, () => {
     // eslint-disable-next-line no-console
-    console.log(`News backend running on http://localhost:${PORT}`);
+    console.log(`News backend running on http://localhost:${PORT} (db=${repo.type})`);
   });
 }
 
