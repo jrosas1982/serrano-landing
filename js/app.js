@@ -37,10 +37,10 @@
       <dialog id="turnoChoiceModal" class="turno-modal">
         <form method="dialog" class="turno-modal-card">
           <button type="submit" class="turno-modal-x" aria-label="Cerrar">×</button>
-          <h3>Te recomendamos usar el portal de autogestión para reservar tu turno de una manera mas ágil</h3>
+          <h3>Te recomendamos usar el portal de autogestión para reservar tu turno de una manera más ágil</h3>
           <div class="turno-modal-actions">
-            <a id="turnoWhatsappBtn" class="btn btn-primary" href="#" target="_blank" rel="noopener noreferrer">Usar Whatsapp de todas formas</a>
-            <a id="turnoPortalBtn" class="btn btn-success" href="#" target="_blank" rel="noopener noreferrer">Portal de autogestion</a>
+            <a id="turnoWhatsappBtn" class="btn btn-primary" href="#" target="_blank" rel="noopener noreferrer">Usar WhatsApp de todas formas</a>
+            <a id="turnoPortalBtn" class="btn btn-success" href="#" target="_blank" rel="noopener noreferrer">Portal de autogestión</a>
           </div>
         </form>
       </dialog>

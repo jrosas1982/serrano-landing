@@ -444,7 +444,7 @@
 
       userEmailInput.value = "";
       userRoleInput.value = "admin";
-      tempPasswordHint.textContent = `Usuario creado. Password temporal: ${res.tempPassword}`;
+      tempPasswordHint.textContent = `Usuario creado. Contraseña temporal: ${res.tempPassword}`;
       await loadUsers();
       showToast("success", "Usuario creado");
     } catch (err) {
@@ -527,9 +527,9 @@
 
     try {
       var res = await api(`/api/admin/users/${resetId}/reset-password`, { method: "POST" });
-      tempPasswordHint.textContent = `Password temporal regenerada: ${res.tempPassword}`;
+      tempPasswordHint.textContent = `Contraseña temporal regenerada: ${res.tempPassword}`;
       await loadUsers();
-      showToast("success", "Password temporal regenerada");
+      showToast("success", "Contraseña temporal regenerada");
     } catch (err) {
       showError(err, "No se pudo resetear password");
     }
